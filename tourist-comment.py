@@ -12,7 +12,6 @@ import math
 import random
 import time
 import pymysql
-#from openpyxl import workbook  # 写入Excel表所用
 from bs4 import BeautifulSoup
 
 
@@ -64,7 +63,6 @@ def parse_html(html, i):
     global ws  # 全局工作表对象
     
     soup = BeautifulSoup(html, 'lxml')
-    #item_list = soup.find_all('ul[class="list_view"] li')
     item_list = soup.find_all('li', class_ = "list_item")  
     
     db = pymysql.connect(host='114.115.207.35', user='root', password='~F1121abcd', port=3306)
@@ -72,8 +70,6 @@ def parse_html(html, i):
     cursor.execute("CREATE DATABASE IF NOT EXISTS spiders DEFAULT CHARACTER SET utf8")
     db = pymysql.connect(host='114.115.207.35', user='root', password='~F1121abcd', port=3306, db='spiders')
     cursor = db.cursor()
-#    sql = 'DROP TABLE tourists'
-#    cursor.execute(sql)
     sql = 'CREATE TABLE IF NOT EXISTS tourists (id INT NOT NULL AUTO_INCREMENT, name VARCHAR(255) NOT NULL, area VARCHAR(255) NOT NULL, satisfy VARCHAR(10) NOT NULL, userName VARCHAR(255) NOT NULL, userId INT NOT NULL, comment VARCHAR(255) NOT NULL, PRIMARY KEY (id))'
     cursor.execute(sql)
     table = 'tourists'
@@ -99,8 +95,6 @@ def parse_html(html, i):
         for pagenum in range(1,pages):
             url = 'https://m.tuniu.com/mapi/tour/getMenpiaoComment?specId='+str(specId)+'&currentPage='+str(pagenum)+'&_='+str(randnum)
             content = got_htmls(url)
-#            if len(content) < 50:
-#                break
             
             if len(parse_comment_json_url(content)) == 0:
                 break
@@ -125,17 +119,7 @@ def parse_html(html, i):
         
 
 if __name__ == '__main__':
-    #wb = workbook.Workbook()  # 创建Excel对象
-    
-#    wb = workbook.Workbook()
-#    ws = wb.active
-    for i in range(2,268):          
-        # ws = wb.create_sheet(str(j)+"sheet")  # 获取当前正在操作的表对象
-        # 往表中写入标题行,以列表形式写入！
-       
-#            ws = wb.active
-        #ws.append(['景点名', '地区', '满意度', '评论'])   
-        print(i)
+    for i in range(1,268):
         url = 'http://menpiao.tuniu.com/cat_0_0_0_0_0_0_1_1_' + str(i) + '.html'
         print(url)
         content = got_html(url)
@@ -143,6 +127,3 @@ if __name__ == '__main__':
             break
         
         parse_html(content, i)
-        
-#        wb.save('./'+str(8)+'tourist.xlsx')
-    
